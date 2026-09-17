@@ -928,23 +928,31 @@
         <div class="wizard-step" data-step="1">
           <p class="wizard-prompt">¿Qué edición te interesa?</p>
           <div class="edition-grid">
-            <button type="button" class="edition-card" data-edition="Única" data-total="30" data-price="$0.25" data-note="Una carpeta, patrón irrepetible">
+            <button type="button" class="edition-card" data-edition="Única" data-total="30" data-price="$0.50" data-note="Una carpeta, patrón irrepetible">
               <span class="edition-index">001–030 / 45</span>
               <span class="edition-name">Única</span>
               <span class="edition-desc">Una carpeta, un patrón que no se repite en ninguna otra.</span>
-              <span class="edition-price">$0.25</span>
+              <span class="edition-price">$0.50</span>
             </button>
-            <button type="button" class="edition-card" data-edition="Par personalizado" data-total="10" data-price="$0.50" data-note="Dos carpetas a juego">
+            <button type="button" class="edition-card" data-edition="Par personalizado" data-total="10" data-price="$0.75" data-note="Dos carpetas a juego">
               <span class="edition-index">031–040 / 45</span>
               <span class="edition-name">Par personalizado</span>
               <span class="edition-desc">Dos carpetas cortadas y numeradas juntas, para regalar en pareja.</span>
-              <span class="edition-price">$0.50</span>
+              <span class="edition-price">$0.75</span>
             </button>
-            <button type="button" class="edition-card" data-edition="Edición docente" data-total="5" data-price="—" data-note="Reservado para profesores">
-              <span class="edition-index">041–045 / 45</span>
-              <span class="edition-name">Edición docente</span>
-              <span class="edition-desc">Un pequeño lote reservado especialmente para profesores del INDEL.</span>
-              <span class="edition-price">No a la venta</span>
+          </div>
+
+          <div id="tipoSelect" class="edition-grid" style="margin-top:16px; display:none;">
+            <p class="wizard-hint" id="tipoSelectPrice" style="grid-column:1/-1; margin-bottom:4px;">—</p>
+            <button type="button" class="edition-card" data-tipo="Edición Módulo">
+              <span class="edition-index">Tipo</span>
+              <span class="edition-name">Edición Módulo</span>
+              <span class="edition-desc">Pieza dentro del módulo escolar de Emprendimiento Colaborativo, INDEL.</span>
+            </button>
+            <button type="button" class="edition-card" data-tipo="Edición Normal">
+              <span class="edition-index">Tipo</span>
+              <span class="edition-name">Edición Normal</span>
+              <span class="edition-desc">Pieza de venta regular, fuera del módulo escolar.</span>
             </button>
           </div>
         </div>
@@ -953,6 +961,7 @@
           <p class="wizard-prompt">Tu reserva</p>
           <div class="summary-box">
             <div class="summary-row"><span>Edición</span><strong id="sumEdition">—</strong></div>
+            <div class="summary-row"><span>Tipo</span><strong id="sumTipo">—</strong></div>
             <div class="summary-row"><span>Precio</span><strong id="sumPrice">—</strong></div>
             <div class="summary-row"><span>Disponibilidad</span><strong id="sumAvail">—</strong></div>
             <div class="summary-note" id="sumNote">—</div>
@@ -979,7 +988,18 @@
               <span>Sección / grado en el INDEL</span>
               <input type="text" name="seccion" placeholder="Ej. 2º Bach. General &quot;A&quot;" required>
             </label>
+            <div id="parPersonalizacion" style="display:none;">
+              <label class="form-field">
+                <span>Nombre de la segunda persona</span>
+                <input type="text" name="par_nombre2" placeholder="Para quién es la segunda carpeta del par">
+              </label>
+              <label class="form-field">
+                <span>Detalles de personalización del par</span>
+                <input type="text" name="par_detalles" placeholder="Iniciales, colores, motivo que las una, etc.">
+              </label>
+            </div>
             <input type="hidden" name="edicion" id="hiddenEdicion">
+            <input type="hidden" name="tipo" id="hiddenTipo">
             <button type="submit" class="wizard-next" id="submitReserva">Confirmar reserva →</button>
             <p class="form-status" id="formStatus"></p>
           </form>
@@ -991,7 +1011,7 @@
       <div class="closing-sign reveal">Grupo Administración — APEL, INDEL. Edición limitada de 45 piezas, ninguna repetida.</div>
 
       <div class="origin-text reveal">
-        <p>Reservar no implica pagar por adelantado — es una forma de asegurar tu lugar dentro del lote antes de que se agote, especialmente si buscas una edición específica (única, par personalizado, o consultar por disponibilidad de la edición docente). El formulario recoge tu nombre y el tipo de pieza que te interesa; el equipo confirma directamente contigo cuando tu carpeta esté lista dentro del orden de producción.</p>
+        <p>Reservar no implica pagar por adelantado — es una forma de asegurar tu lugar dentro del lote antes de que se agote, especialmente si buscas una edición específica (única o par personalizado, y si es para el módulo escolar o de venta normal). El formulario recoge tu nombre y el tipo de pieza que te interesa; el equipo confirma directamente contigo cuando tu carpeta esté lista dentro del orden de producción.</p>
         <p>Como cada pieza depende de qué página le toque, no es posible garantizar un patrón exacto al momento de reservar — pero sí el tipo de edición y tu lugar en la fila del lote de 45.</p>
       </div>
     </div>
@@ -1093,6 +1113,9 @@
         const ticks = wizard.querySelectorAll('.wizard-tick');
         const editionCards = wizard.querySelectorAll('.edition-card');
         const hiddenEdicion = document.getElementById('hiddenEdicion');
+        const hiddenTipo = document.getElementById('hiddenTipo');
+        const tipoSelect = document.getElementById('tipoSelect');
+        const tipoCards = tipoSelect.querySelectorAll('.edition-card');
         const reservaForm = document.getElementById('reservaForm');
         const formStatus = document.getElementById('formStatus');
         const submitBtn = document.getElementById('submitReserva');
@@ -1107,15 +1130,37 @@
           wizard.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
+        let pendingEdition = null;
+
         editionCards.forEach((card) => {
           card.addEventListener('click', () => {
             editionCards.forEach((c) => c.classList.remove('selected'));
             card.classList.add('selected');
-            document.getElementById('sumEdition').textContent = card.dataset.edition;
-            document.getElementById('sumPrice').textContent = card.dataset.price;
-            document.getElementById('sumAvail').textContent = card.dataset.total + ' piezas en esta edición';
-            document.getElementById('sumNote').textContent = card.dataset.note + '.';
+            pendingEdition = card;
             hiddenEdicion.value = card.dataset.edition;
+            document.getElementById('tipoSelectPrice').textContent = 'Precio: ' + card.dataset.price;
+            tipoSelect.style.display = 'grid';
+            tipoSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          });
+        });
+
+        tipoCards.forEach((card) => {
+          card.addEventListener('click', () => {
+            if (!pendingEdition) return;
+            tipoCards.forEach((c) => c.classList.remove('selected'));
+            card.classList.add('selected');
+            hiddenTipo.value = card.dataset.tipo;
+            document.getElementById('sumEdition').textContent = pendingEdition.dataset.edition;
+            document.getElementById('sumTipo').textContent = card.dataset.tipo;
+            document.getElementById('sumPrice').textContent = pendingEdition.dataset.price;
+            document.getElementById('sumAvail').textContent = pendingEdition.dataset.total + ' piezas en esta edición';
+            document.getElementById('sumNote').textContent = pendingEdition.dataset.note + '.';
+
+            const parFields = document.getElementById('parPersonalizacion');
+            const isPar = pendingEdition.dataset.edition === 'Par personalizado';
+            parFields.style.display = isPar ? 'block' : 'none';
+            parFields.querySelectorAll('input').forEach((inp) => { inp.required = isPar; });
+
             goToStep(2);
           });
         });
@@ -1137,7 +1182,10 @@
                 Nombre: fd.get('nombre'),
                 Contacto: fd.get('contacto'),
                 Edicion: fd.get('edicion'),
+                Tipo: fd.get('tipo'),
                 Seccion: fd.get('seccion'),
+                ParNombre2: fd.get('par_nombre2') || '',
+                ParDetalles: fd.get('par_detalles') || '',
                 Fecha: new Date().toISOString()
               }
             };
