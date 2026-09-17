@@ -1178,14 +1178,22 @@
             formStatus.className = 'form-status';
 
             const fd = new FormData(reservaForm);
-            const tipo = fd.get('tipo'); // 'Edición Módulo' o 'Edición Normal'
+            // Respaldo: si el input oculto viene vacío, tomar el valor del resumen del wizard
+            const edicion = (fd.get('edicion') || document.getElementById('sumEdition').textContent || '').trim();
+            const tipo = (fd.get('tipo') || document.getElementById('sumTipo').textContent || '').trim();
+            if (!edicion || !tipo || edicion === '—' || tipo === '—') {
+              formStatus.textContent = 'Falta seleccionar la edición. Vuelve al paso 01.';
+              formStatus.className = 'form-status err';
+              submitBtn.disabled = false;
+              return;
+            }
             const payload = {
               data: {
                 Nombre: fd.get('nombre'),
                 Contacto: fd.get('contacto'),
                 Modulo: tipo === 'Edición Módulo' ? 'SI' : '',
                 Normal: tipo === 'Edición Normal' ? 'SI' : '',
-                Edicion: fd.get('edicion'),
+                Edicion: edicion,
                 Seccion: fd.get('seccion'),
                 Fecha: new Date().toLocaleDateString('es-SV', { timeZone: 'America/El_Salvador' })
               }
