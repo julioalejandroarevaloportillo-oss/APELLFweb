@@ -891,6 +891,7 @@
     .folder-layer { transition: none; }
   }
 </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -1177,16 +1178,16 @@
             formStatus.className = 'form-status';
 
             const fd = new FormData(reservaForm);
+            const tipo = fd.get('tipo'); // 'Edición Módulo' o 'Edición Normal'
             const payload = {
               data: {
                 Nombre: fd.get('nombre'),
                 Contacto: fd.get('contacto'),
+                Modulo: tipo === 'Edición Módulo' ? 'SI' : '',
+                Normal: tipo === 'Edición Normal' ? 'SI' : '',
                 Edicion: fd.get('edicion'),
-                Tipo: fd.get('tipo'),
                 Seccion: fd.get('seccion'),
-                ParNombre2: fd.get('par_nombre2') || '',
-                ParDetalles: fd.get('par_detalles') || '',
-                Fecha: new Date().toISOString()
+                Fecha: new Date().toLocaleDateString('es-SV', { timeZone: 'America/El_Salvador' })
               }
             };
 
