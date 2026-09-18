@@ -623,6 +623,75 @@
     color: rgba(242,239,232,0.6);
   }
 
+  /* ============ PROMO / COUNTDOWN ============ */
+  .promo-banner {
+    margin-top: 70px;
+    border: 1px solid rgba(242,239,232,0.18);
+    border-left: 4px solid var(--accent);
+    padding: 40px 36px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 36px;
+    align-items: center;
+    background: rgba(184,80,28,0.07);
+  }
+  .promo-eyebrow {
+    font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 12px;
+  }
+  .promo-title {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(1.6rem, 3.4vw, 2.6rem); line-height: 1.05; letter-spacing: -0.02em;
+  }
+  .promo-title em { font-style: italic; color: var(--accent); }
+  .promo-desc { margin-top: 12px; color: rgba(242,239,232,0.55); font-size: 0.95rem; max-width: 460px; }
+  .countdown { display: flex; gap: 14px; }
+  .count-cell { text-align: center; min-width: 74px; }
+  .count-num {
+    font-family: var(--serif); font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+    line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+    border: 1px solid rgba(242,239,232,0.2); padding: 14px 8px 10px;
+    background: rgba(18,17,15,0.35);
+  }
+  .count-label {
+    display: block; margin-top: 8px;
+    font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: rgba(242,239,232,0.45);
+  }
+  .promo-ended {
+    font-family: var(--serif); font-style: italic; font-size: 1.4rem; color: rgba(242,239,232,0.6);
+  }
+
+  /* ============ SECCIÓN PAR PERSONALIZADO ============ */
+  .duo-section { margin-top: 60px; border-top: 1px solid rgba(242,239,232,0.18); padding-top: 50px; }
+  .duo-grid {
+    display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center;
+  }
+  .duo-title {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(1.7rem, 3.6vw, 2.8rem); line-height: 1.06; letter-spacing: -0.025em;
+  }
+  .duo-title em { font-style: italic; color: var(--accent); }
+  .duo-desc { margin-top: 14px; color: rgba(242,239,232,0.55); font-size: 0.95rem; max-width: 480px; }
+  .duo-cta {
+    display: inline-flex; align-items: center; gap: 12px;
+    margin-top: 28px; padding: 1rem 2.2rem;
+    border: 1px solid var(--accent); color: var(--paper);
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+    transition: background 250ms ease, transform 250ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .duo-cta:hover { background: var(--accent); transform: translateY(-3px); }
+  .duo-cta .arrow { transition: transform 300ms ease; }
+  .duo-cta:hover .arrow { transform: translateX(5px); }
+  .duo-price {
+    font-family: var(--serif); font-size: clamp(2.6rem, 5vw, 4rem);
+    letter-spacing: -0.03em; line-height: 1; text-align: right;
+  }
+  .duo-price small {
+    display: block; font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.16em;
+    text-transform: uppercase; color: rgba(242,239,232,0.4); margin-top: 8px;
+  }
+
   /* ============ WIZARD ============ */
   .wizard {
     margin-top: 56px;
@@ -860,6 +929,9 @@
     .hero-sub-row { flex-direction: column; align-items: flex-start; }
     .hero-meta { text-align: left; }
     .edition-card { grid-template-columns: 1fr; }
+    .promo-banner, .duo-grid { grid-template-columns: 1fr; }
+    .countdown { flex-wrap: wrap; }
+    .duo-price { text-align: left; }
     .edition-desc { grid-column: 1; max-width: none; }
     .edition-price { grid-row: auto; }
   }
@@ -918,6 +990,36 @@
     <div class="container">
       <h2 class="closing-title reveal">Diseñada por nosotros.<br><em>Guardada por ti.</em></h2>
       <p class="closing-sub reveal">Una sola tirada. Cuarenta y cinco piezas. Cuando se acabe, no habrá otra igual.</p>
+
+      <!-- ============ PROMOCIÓN CON CUENTA REGRESIVA ============ -->
+      <div class="promo-banner reveal" id="promoBanner">
+        <div>
+          <span class="promo-eyebrow">Oferta de lanzamiento · solo esta semana</span>
+          <h3 class="promo-title">Reserva el par personalizado <em>antes del sábado</em> y el grabado de iniciales va <em>incluido.</em></h3>
+          <p class="promo-desc">A las 00:00 del sábado la promoción se acaba y el grabado se cobra aparte. El reloj no espera — tu historia sí puede.</p>
+        </div>
+        <div class="countdown" id="countdown" aria-label="Cuenta regresiva">
+          <div class="count-cell"><div class="count-num" id="cdD">--</div><span class="count-label">Días</span></div>
+          <div class="count-cell"><div class="count-num" id="cdH">--</div><span class="count-label">Horas</span></div>
+          <div class="count-cell"><div class="count-num" id="cdM">--</div><span class="count-label">Min</span></div>
+          <div class="count-cell"><div class="count-num" id="cdS">--</div><span class="count-label">Seg</span></div>
+        </div>
+      </div>
+
+      <!-- ============ SECCIÓN PAR PERSONALIZADO ============ -->
+      <div class="duo-section reveal">
+        <div class="duo-grid">
+          <div>
+            <h3 class="duo-title">¿Van de la mano? <em>Hazlo oficial.</em></h3>
+            <p class="duo-desc">Dos carpetas cortadas y numeradas juntas, con la historia de ustedes dos escondida en las páginas. Llena la ficha de emparejamiento de 21 preguntas y el equipo las diseña a juego.</p>
+            <a class="duo-cta" href="par-personalizado.html">Ficha del par personalizado <span class="arrow">→</span></a>
+          </div>
+          <div class="duo-price">
+            $0.75
+            <small>Edición 031–040 / 45 · 10 pares</small>
+          </div>
+        </div>
+      </div>
 
       <div class="wizard reveal" id="wizard">
         <div class="wizard-track">
@@ -1106,6 +1208,50 @@
       }, { threshold: 0.5 });
       counters.forEach((el) => countObserver.observe(el));
 
+      // --- Cuenta regresiva: próximo sábado 00:00 (hora El Salvador, UTC-6) ---
+      (function () {
+        const elD = document.getElementById('cdD');
+        if (!elD) return;
+        const elH = document.getElementById('cdH');
+        const elM = document.getElementById('cdM');
+        const elS = document.getElementById('cdS');
+        const banner = document.getElementById('promoBanner');
+
+        function targetSaturday() {
+          const now = new Date();
+          const sv = new Date(now.getTime() + now.getTimezoneOffset() * 60000 - 6 * 3600000);
+          const t = new Date(sv.getFullYear(), sv.getMonth(), sv.getDate(), 0, 0, 0);
+          let add = (6 - sv.getDay() + 7) % 7; // días hasta sábado (6)
+          t.setDate(t.getDate() + add);
+          return t.getTime();
+        }
+
+        let target = targetSaturday();
+        const pad = (n) => String(n).padStart(2, '0');
+
+        function tick() {
+          const now = new Date();
+          const sv = new Date(now.getTime() + now.getTimezoneOffset() * 60000 - 6 * 3600000);
+          let diff = target - sv.getTime();
+          if (diff <= 0) { // sábado llegó: apagar promo y programar la del próximo sábado
+            banner.querySelector('.countdown').innerHTML = '<p class="promo-ended">La promoción terminó — nos vemos la próxima semana.</p>';
+            banner.style.borderLeftColor = 'rgba(242,239,232,0.3)';
+            target = targetSaturday();
+            return;
+          }
+          const d = Math.floor(diff / 86400000);
+          const h = Math.floor(diff % 86400000 / 3600000);
+          const m = Math.floor(diff % 3600000 / 60000);
+          const s = Math.floor(diff % 60000 / 1000);
+          elD.textContent = pad(d);
+          elH.textContent = pad(h);
+          elM.textContent = pad(m);
+          elS.textContent = pad(s);
+        }
+        tick();
+        setInterval(tick, 1000);
+      })();
+
       // --- Wizard de reserva ---
       const wizard = document.getElementById('wizard');
       if (wizard) {
@@ -1195,10 +1341,12 @@
                 Normal: tipo === 'Edición Normal' ? 'SI' : '',
                 Edicion: edicion,
                 Seccion: fd.get('seccion'),
+                Par: [fd.get('par_nombre2'), fd.get('par_detalles')].filter(Boolean).join(' — '),
                 Fecha: new Date().toLocaleDateString('es-SV', { timeZone: 'America/El_Salvador' })
               }
             };
 
+            console.log('Enviando a SheetDB:', payload);
             try {
               const res = await fetch(SHEETDB_URL, {
                 method: 'POST',
